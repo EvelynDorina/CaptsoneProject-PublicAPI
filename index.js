@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const port = 3000;
+const port = 3001;
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use("/node_modules", express.static(__dirname + "/node_modules"));
@@ -51,17 +51,17 @@ app.post("/get-holidays", async (req, res) => {
     const result = await axios.get(apiUrl);
     const holidaysData = result.data;
 
-    // 重新获取可用国家
     const countriesResponse = await axios.get(
       "https://date.nager.at/api/v3/AvailableCountries"
     );
     const countries = countriesResponse.data;
     let isPublicHoliday = null;
-    if (apiType === "isTodayPublicHoliday") {
+
+    if (apiType === "IsTodayPublicHoliday") {
       const statusCode = result.status;
-      isPublicHoliday = statusCode === 200; // 如果是200，则是公共假期
+      isPublicHoliday = statusCode === 200;
     }
-    // 把数据传递到前端，判断如果有数据就显示
+
     res.render("index.ejs", {
       holidaysData,
       apiType,
@@ -72,7 +72,6 @@ app.post("/get-holidays", async (req, res) => {
   } catch (error) {
     console.error("Error fetching data:", error.message);
 
-    // 重新获取可用国家以在错误时保持界面可用
     const countriesResponse = await axios.get(
       "https://date.nager.at/api/v3/AvailableCountries"
     );
@@ -81,7 +80,6 @@ app.post("/get-holidays", async (req, res) => {
     res.render("index.ejs", {
       holidaysData: null,
       apiType: null,
-
       error: "Error fetching data from API",
       countries,
     });
