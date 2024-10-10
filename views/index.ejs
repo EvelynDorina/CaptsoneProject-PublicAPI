@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="/node_modules/bulma/css/bulma.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      integrity="sha512-dyDgz7Zg5PHfUPu59f8Jpr5my7NNHlaQVjHXghQt5xPZ+taJRwZv1/gjV9TA1n6Mp55a9RcsFtDtvM11RAY+Kw=="
+      crossorigin="anonymous"
+    />
+    <title>Holiday Finder</title>
+  </head>
+  <body>
+    <section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Holiday Finder</h1>
+    <form action="/get-holidays" method="POST" id="apiForm" class="box">
+      <div class="field">
+        <label class="label" for="apiType">Select Type:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="apiType" id="apiType" required onchange="toggleYearInput()">
+              <option value="NextPublicHolidays">Next Public Holidays</option>
+              <option value="PublicHolidays">Public Holidays</option>
+              <!-- <option value="NextPublicHolidaysWorldwide">Next Public Holidays Worldwide</option> -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="countryCode">Select a Country:</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="countryCode" id="countryCode">
+                <!-- <option value="null"></option> -->
+              <% countries.forEach(country => { %>
+                <option value="<%= country.countryCode %>"><%= country.name %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" id="yearInputDiv" style="display: none">
+        <label class="label" for="year">Enter a Year:</label>
+        <div class="control">
+          <input class="input" type="number" name="year" id="year" placeholder="2024">
+        </div>
+      </div>
+
+      <div class="control">
+        <button class="button is-link is-fullwidth" type="submit">Search</button>
+      </div>
+    </form>
+
+    <div class="notification is-info" id="results" style="display: <% if (!holidaysData) { %> none <% } else { %> block <% } %>">
+      <h2 class="title is-4">Holiday Information</h2>
+      <div class="card">
+        <div class="card-content">
+          <% if (apiType && countryCode) { %>
+            <p class="subtitle">
+              <strong><%= apiType %> in</strong>
+              <strong><%= countries.find(country => country.countryCode === countryCode).name %></strong>
+            </p>
+        
+           <% } else if (apiType) { %>
+             <strong><%= apiType %> </strong>
+            <% } %>
+          <% if (apiType === 'PublicHolidays') { %>
+            <ul>
+              <% holidaysData.forEach(holiday => { %>
+                <li>
+                  <p><b>Date:</b> <%= holiday.date %></p>
+                  <p><b>Local Name:</b> <%= holiday.localName %></p>
+                  <p><b>Name:</b> <%= holiday.name %></p>
+                  <br>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else if (apiType === 'NextPublicHolidays') { %>
+            <ul>
+              <% holidaysData.forEach(holiday => { %>
+                <li>
+                  <p><b>Date: </b><%= holiday.date %></p>
+                  <p><b>Local Name:</b> <%= holiday.localName %></p>
+                  <p><b>Name: </b><%= holiday.name %></p>
+                  <br>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else if (apiType === 'NextPublicHolidaysWorldwide') { %>
+            <ul>
+              <% holidaysData.forEach(holiday => { %>
+                <li>
+                  <p><b>Country:</b> <%= countries.find(country => country.countryCode === holiday.countryCode).name %></p>
+                  <p><b>Date: </b><%= holiday.date %></p>
+                  <p><b>Local Name:</b> <%= holiday.localName %></p>
+                  <p><b>Name:</b> <%= holiday.name %>
+                    <br>
+                </li>
+              <% }) %>
+            </ul>
+          <% } else { %>
+            <p>No data available. Please try again.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function toggleYearInput() {
+    const apiType = document.getElementById('apiType').value;
+    const yearInputDiv = document.getElementById('yearInputDiv');
+    if (apiType === 'PublicHolidays') {
+      yearInputDiv.style.display = 'block';
+    } else {
+      yearInputDiv.style.display = 'none';
+    }
+  }
+//   function toggleCountrySelect() {
+//     const apiType = document.getElementById('apiType').value;
+//     const yearInputDiv = document.getElementById('yearInputDiv');
+//     if (apiType === 'PublicHolidays') {
+//       yearInputDiv.style.display = 'block';
+//     } else {
+//       yearInputDiv.style.display = 'none';
+//     }
+//   }
+</script>
+
+    </script>
+  </body>
+  
+</html>
